@@ -1,3 +1,8 @@
+
+# Compiled from Typescript
+js/*.js
+
+## Boilerplate Node .gitignore below
 # Logs
 logs
 *.log

@@ -70,16 +70,12 @@ A standalone TypeScript compiler is available on NPM.
 
 To compile the TypeScript in this project:
 
-	# from examples/typescript-react
 	$ ./node_modules/typescript/bin/tsc -p ./js/
 
 To be able to run the output JS files in the browser:
 
-	# from examples/typescript-react
-	$ ./node_modules/browserify/bin/cmd ./js/app.js -o ./js/bundle.js"
+	$ ./node_modules/.bin/browserify js/app.js -o js/bundle.js
 
-To run the app, spin up an HTTP server (e.g. `python -m SimpleHTTPServer`) and visit http://localhost/.../myexample/.
-Alternatively you can run:
+Run the simple server
 
-	# from examples/typescript-react
 	$ npm run start
