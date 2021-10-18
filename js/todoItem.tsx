@@ -6,7 +6,7 @@
 
 /// <reference path="./interfaces.d.ts"/>
 
-import * as classNames from "classnames";
+import classnames from "classnames";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ENTER_KEY, ESCAPE_KEY } from "./constants";
@@ -80,7 +80,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
 
   public render() {
     return (
-      <li className={classNames({
+      <li className={classnames({
         completed: this.props.todo.completed,
         editing: this.props.editing
       })}>
