@@ -7,108 +7,86 @@
 /// <reference path="./interfaces.d.ts"/>
 
 import classnames from "classnames";
-import { Component, createRef  } from "react";
-import * as ReactDOM from "react-dom";
+import { memo, useRef, useState, useEffect } from "react";
 import { ENTER_KEY, ESCAPE_KEY } from "./constants";
 
-class TodoItem extends Component<ITodoItemProps, ITodoItemState> {
 
-  private editFieldRef = createRef<HTMLInputElement>()
+const TodoItemComponent = (props: ITodoItemProps) => {
+  const editFieldRef = useRef<HTMLInputElement>(null)
+  const [editText, setEditText] = useState(props.todo.title)
 
-  public state : ITodoItemState;
-
-  constructor(props : ITodoItemProps){
-    super(props);
-    this.state = { editText: this.props.todo.title };
-  }
-
-  public handleSubmit(event : React.FormEvent) {
-    var val = this.state.editText.trim();
+  const handleSubmit = (event : React.FormEvent) => {
+    var val = editText.trim();
     if (val) {
-      this.props.onSave(val);
-      this.setState({editText: val});
+      props.onSave(val);
+      setEditText(val);
     } else {
-      this.props.onDestroy();
+      props.onDestroy();
     }
   }
 
-  public handleEdit() {
-    this.props.onEdit();
-    this.setState({editText: this.props.todo.title});
+  const handleEdit = () => {
+    props.onEdit();
+    setEditText(props.todo.title);
   }
 
-  public handleKeyDown(event : React.KeyboardEvent) {
+  const handleKeyDown = (event : React.KeyboardEvent) => {
     if (event.key.slice(0, 3) === ESCAPE_KEY) {
-      this.setState({editText: this.props.todo.title});
-      this.props.onCancel(event);
+      setEditText(props.todo.title);
+      props.onCancel(event);
     } else if (event.key === ENTER_KEY) {
-      this.handleSubmit(event);
+      handleSubmit(event);
     }
   }
 
-  public handleChange(event : React.FormEvent) {
+  const handleChange = (event : React.FormEvent) => {
     var input : any = event.target;
-    this.setState({ editText : input.value });
+    setEditText(input.value);
   }
 
-  /**
-   * This is a completely optional performance enhancement that you can
-   * implement on any React component. If you were to delete this method
-   * the app would still work correctly (and still be very performant!), we
-   * just use it as an example of how little code it takes to get an order
-   * of magnitude performance improvement.
-   */
-  public shouldComponentUpdate(nextProps : ITodoItemProps, nextState : ITodoItemState) {
-    return (
-      nextProps.todo !== this.props.todo ||
-      nextProps.editing !== this.props.editing ||
-      nextState.editText !== this.state.editText
-    );
-  }
+  useEffect(() => {
+    console.log('HERE');
+    var node =  editFieldRef.current;
+    node.focus();
+    node.setSelectionRange(node.value.length, node.value.length);
+  }, [props.editing]);
 
-  /**
-   * Safely manipulate the DOM after updating the state when invoking
-   * `this.props.onEdit()` in the `handleEdit` method above.
-   * For more info refer to notes at https://facebook.github.io/react/docs/component-api.html#setstate
-   * and https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
-   */
-  public componentDidUpdate(prevProps : ITodoItemProps) {
-    if (!prevProps.editing && this.props.editing) {
-      var node =  this.editFieldRef.current;
-      node.focus();
-      node.setSelectionRange(node.value.length, node.value.length);
-    }
-  }
 
-  public render() {
-    return (
-      <li className={classnames({
-        completed: this.props.todo.completed,
-        editing: this.props.editing
-      })}>
-        <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            checked={this.props.todo.completed}
-            onChange={this.props.onToggle}
-          />
-          <label onDoubleClick={ e => this.handleEdit() }>
-            {this.props.todo.title}
-          </label>
-          <button className="destroy" onClick={this.props.onDestroy} />
-        </div>
+  return (
+    <li className={classnames({
+      completed: props.todo.completed,
+      editing: props.editing
+    })}>
+      <div className="view">
         <input
-          ref={this.editFieldRef}
-          className="edit"
-          value={this.state.editText}
-          onBlur={ e => this.handleSubmit(e) }
-          onChange={ e => this.handleChange(e) }
-          onKeyDown={ e => this.handleKeyDown(e) }
+          className="toggle"
+          type="checkbox"
+          checked={props.todo.completed}
+          onChange={props.onToggle}
         />
-      </li>
-    );
-  }
+        <label onDoubleClick={ e => handleEdit() }>
+          {props.todo.title}
+        </label>
+        <button className="destroy" onClick={props.onDestroy} />
+      </div>
+      <input
+        ref={editFieldRef}
+        className="edit"
+        value={editText}
+        onBlur={ e => handleSubmit(e) }
+        onChange={ e => handleChange(e) }
+        onKeyDown={ e => handleKeyDown(e) }
+      />
+    </li>
+  );
 }
+
+// Replaces shouldComponentUpdate
+const areEqual = (prevProps: ITodoItemProps , nextProps: ITodoItemProps) => (
+  nextProps.todo === prevProps.todo &&
+  nextProps.editing === prevProps.editing
+)
+
+const TodoItem = memo(TodoItemComponent, areEqual)
 
 export { TodoItem };
