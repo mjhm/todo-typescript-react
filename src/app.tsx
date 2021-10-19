@@ -8,12 +8,14 @@
 
 declare var Router;
 import { findDOMNode } from "react-dom"
-import { Component } from "react"
+import { Component, createRef } from "react"
 import { TodoFooter } from "./footer";
 import { TodoItem } from "./todoItem";
 import { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY } from "./constants";
 
 export default class TodoApp extends Component<IAppProps, IAppState> {
+
+  private newFieldRef = createRef<HTMLInputElement>()
 
   public state : IAppState;
 
@@ -36,17 +38,17 @@ export default class TodoApp extends Component<IAppProps, IAppState> {
   }
 
   public handleNewTodoKeyDown(event : React.KeyboardEvent) {
-    if (event.keyCode !== ENTER_KEY) {
+    if (event.key !== ENTER_KEY) {
       return;
     }
 
     event.preventDefault();
 
-    var val = (findDOMNode(this.refs["newField"]) as HTMLInputElement).value.trim();
+    var val = this.newFieldRef.current.value.trim();
 
     if (val) {
       this.props.model.addTodo(val);
-      (findDOMNode(this.refs["newField"]) as HTMLInputElement).value = '';
+      this.newFieldRef.current.value = '';
     }
   }
 
@@ -159,7 +161,7 @@ export default class TodoApp extends Component<IAppProps, IAppState> {
         <header className="header">
           <h1>todos</h1>
           <input
-            ref="newField"
+            ref={this.newFieldRef}
             className="new-todo"
             placeholder="What needs to be done?"
             onKeyDown={ e => this.handleNewTodoKeyDown(e) }
