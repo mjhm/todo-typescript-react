@@ -7,11 +7,13 @@
 /// <reference path="./interfaces.d.ts"/>
 
 import classnames from "classnames";
-import * as React from "react";
+import { Component, createRef  } from "react";
 import * as ReactDOM from "react-dom";
 import { ENTER_KEY, ESCAPE_KEY } from "./constants";
 
-class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+class TodoItem extends Component<ITodoItemProps, ITodoItemState> {
+
+  private editFieldRef = createRef<HTMLInputElement>()
 
   public state : ITodoItemState;
 
@@ -72,7 +74,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
    */
   public componentDidUpdate(prevProps : ITodoItemProps) {
     if (!prevProps.editing && this.props.editing) {
-      var node = (ReactDOM.findDOMNode(this.refs["editField"]) as HTMLInputElement);
+      var node =  this.editFieldRef.current;
       node.focus();
       node.setSelectionRange(node.value.length, node.value.length);
     }
@@ -97,7 +99,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
           <button className="destroy" onClick={this.props.onDestroy} />
         </div>
         <input
-          ref="editField"
+          ref={this.editFieldRef}
           className="edit"
           value={this.state.editText}
           onBlur={ e => this.handleSubmit(e) }
