@@ -36,10 +36,10 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
   }
 
   public handleKeyDown(event : React.KeyboardEvent) {
-    if (event.keyCode === ESCAPE_KEY) {
+    if (event.key.slice(0, 3) === ESCAPE_KEY) {
       this.setState({editText: this.props.todo.title});
       this.props.onCancel(event);
-    } else if (event.keyCode === ENTER_KEY) {
+    } else if (event.key === ENTER_KEY) {
       this.handleSubmit(event);
     }
   }
