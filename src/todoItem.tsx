@@ -45,7 +45,6 @@ const TodoItemComponent = (props: ITodoItemProps) => {
   }
 
   useEffect(() => {
-    console.log('HERE');
     var node =  editFieldRef.current;
     node.focus();
     node.setSelectionRange(node.value.length, node.value.length);
